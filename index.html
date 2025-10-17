@@ -410,6 +410,8 @@
                 const game = snapshot.val();
                 if (!game) return;
                 
+                console.log('Game status:', game.status, 'Player:', playerNumber);
+                
                 if (game.status === 'waiting' && playerNumber === 1) {
                     // Ждём
                 } else if (game.status === 'setup') {
@@ -582,16 +584,29 @@
         }
 
         function finishSetup() {
-            const updates = {};
-            updates['player' + playerNumber + '/ready'] = true;
-            updates['player' + playerNumber + '/grid'] = myGrid;
+            console.log('Finishing setup for player', playerNumber);
             
             db.ref('games/' + gameId).once('value').then((snapshot) => {
                 const game = snapshot.val();
-                if (game.player1.ready && game.player2.ready) {
+                
+                const updates = {};
+                updates['player' + playerNumber + '/ready'] = true;
+                updates['player' + playerNumber + '/grid'] = myGrid;
+                
+                const otherPlayerNum = playerNumber === 1 ? 2 : 1;
+                const otherPlayer = 'player' + otherPlayerNum;
+                
+                console.log('My ready: true, Other player ready:', game[otherPlayer].ready);
+                
+                // Проверяем оба условия: и свою готовность (после update), и готовность противника
+                if (game[otherPlayer].ready && game[otherPlayer].grid) {
                     updates['status'] = 'playing';
+                    console.log('Both players ready! Starting game...');
                 }
-                db.ref('games/' + gameId).update(updates);
+                
+                db.ref('games/' + gameId).update(updates).then(() => {
+                    console.log('Updates saved successfully');
+                });
             });
         }
 
