@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Морской бой - Онлайн</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 12px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 32px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+        .btn {
+            width: 100%;
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            margin-bottom: 12px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .divider {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .link-box {
+            background: #f3f4f6;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .link-text {
+            flex: 1;
+            font-family: monospace;
+            font-size: 14px;
+            color: #1f2937;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .copy-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .grid {
+            display: inline-block;
+            background: #1e3a8a;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .grid-inner {
+            display: grid;
+            grid-template-columns: repeat(10, 36px);
+            gap: 2px;
+        }
+        .cell {
+            width: 36px;
+            height: 36px;
+            background: #60a5fa;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cell:hover {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+        .cell.ship {
+            background: #374151;
+        }
+        .cell.miss {
+            background: #93c5fd;
+        }
+        .cell.hit {
+            background: #ef4444;
+            position: relative;
+        }
+        .cell.hit::after {
+            content: '×';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .hidden { display: none; }
+        .game-container {
+            max-width: 1200px;
+        }
+        .game-grid-wrapper {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .grid-section {
+            text-align: center;
+        }
+        .grid-section h3 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .ship-list {
+            margin-bottom: 24px;
+        }
+        .ship-btn {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            background: #f3f4f6;
+            color: #1f2937;
+            transition: all 0.2s;
+        }
+        .ship-btn:hover {
+            background: #e5e7eb;
+        }
+        .ship-btn.selected {
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            color: white;
+            transform: scale(1.05);
+        }
+        .rotate-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        .waiting-badge {
+            background: #f59e0b;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="container">
+        <div class="spinner"></div>
+        <p class="subtitle">Загрузка Firebase...</p>
+    </div>
+
+    <div id="menu" class="container hidden">
+        <div class="icon">⚓</div>
+        <h1>Морской бой</h1>
+        <p class="subtitle">Играйте онлайн с другом</p>
+        <button class="btn" onclick="createGame()">🎮 Создать игру</button>
+        <div class="divider">
+            <p class="small-text">✅ Игра через интернет на разных устройствах</p>
+        </div>
+    </div>
+
+    <div id="waiting" class="container hidden">
+        <div class="icon">👥</div>
+        <h1 style="margin-bottom: 24px;">Игра создана!</h1>
+        <p class="subtitle">Отправьте эту ссылку другу:</p>
+        <div class="link-box">
+            <span class="link-text" id="gameLink"></span>
+            <button class="copy-btn" onclick="copyLink()">📋 Копировать</button>
+        </div>
+        <div class="status-badge waiting-badge">⏳ Ожидание игрока 2...</div>
+        <div class="divider">
+            <p class="small-text">Второй игрок должен открыть эту ссылку</p>
+        </div>
+    </div>
+
+    <div id="setup" class="container game-container hidden">
+        <h1 style="margin-bottom: 8px;">Расстановка кораблей</h1>
+        <p class="subtitle" id="setupPlayer">Вы: Игрок 1</p>
+        <div class="game-grid-wrapper">
+            <div class="grid-section">
+                <h3>Ваше поле</h3>
+                <div class="grid">
+                    <div class="grid-inner" id="setupGrid"></div>
+                </div>
+            </div>
+            <div class="grid-section" style="max-width: 300px;">
+                <h3>Корабли (<span id="shipsCount">10</span>)</h3>
+                <div class="ship-list" id="shipList"></div>
+                <button id="rotateBtn" class="rotate-btn" onclick="toggleRotation()">🔄 Повернуть (горизонтально)</button>
+                <button class="rotate-btn" style="background: linear-gradient(to right, #f59e0b, #d97706);" onclick="autoPlaceShips()">🎲 Расставить автоматически</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="waitingOpponent" class="container hidden">
+        <div class="spinner"></div>
+        <h1 style="margin-top: 24px;">Ожидание...</h1>
+        <p class="subtitle" id="waitingText">Второй игрок расставляет корабли</p>
+    </div>
+
+    <div id="game" class="container game-container hidden">
+        <h1 style="margin-bottom: 16px;">Морской бой</h1>
+        <div class="status-badge" id="turnIndicator">🎯 Ваш ход</div>
+        <div class="game-grid-wrapper" style="margin-top: 32px;">
+            <div class="grid-section">
+                <h3>Ваше поле 🛡️</h3>
+                <div class="grid">
+                    <div class="grid-inner" id="myGameGrid"></div>
+                </div>
+                <p style="margin-top: 16px; color: #6b7280; font-weight: 600;">Попадания: <span id="myHits">0</span></p>
+            </div>
+            <div class="grid-section">
+                <h3>Поле противника ⚔️</h3>
+                <div class="grid">
+                    <div class="grid-inner" id="opponentGrid"></div>
+                </div>
+                <p style="margin-top: 16px; color: #6b7280; font-weight: 600;">Попадания: <span id="oppHits">0</span> / 20</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameover" class="container hidden">
+        <div style="font-size: 128px; margin-bottom: 24px;" id="gameoverIcon">🏆</div>
+        <h1 style="margin-bottom: 16px;" id="gameoverTitle">Победа!</h1>
+        <p class="subtitle" style="margin-bottom: 32px;" id="gameoverText">Вы выиграли!</p>
+        <button class="btn" onclick="location.href = location.origin + location.pathname">🎮 Новая игра</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(initApp, 100);
+        });
+
+        function initApp() {
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyB1uKjApT8tLJ0X45rXnP9CS4QHkNwJAeY",
+                    authDomain: "testoviy-proekt-e7dcb.firebaseapp.com",
+                    databaseURL: "https://testoviy-proekt-e7dcb-default-rtdb.firebaseio.com",
+                    projectId: "testoviy-proekt-e7dcb",
+                    storageBucket: "testoviy-proekt-e7dcb.firebasestorage.app",
+                    messagingSenderId: "196903959201",
+                    appId: "1:196903959201:web:e64f043b46c24dde89cee0"
+                };
+
+                firebase.initializeApp(firebaseConfig);
+                window.db = firebase.database();
+                
+                document.getElementById('loading').classList.add('hidden');
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlGameId = urlParams.get('game');
+                
+                if (urlGameId) {
+                    joinGame(urlGameId);
+                } else {
+                    showScreen('menu');
+                }
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                document.getElementById('loading').innerHTML = '<div class="icon">❌</div><h1>Ошибка загрузки</h1><p class="subtitle">Не удалось подключиться к Firebase.</p>';
+            }
+        }
+
+        const GRID_SIZE = 10;
+        const SHIPS = [
+            { name: 'Линкор', size: 4, count: 1 },
+            { name: 'Крейсер', size: 3, count: 2 },
+            { name: 'Эсминец', size: 2, count: 3 },
+            { name: 'Катер', size: 1, count: 4 }
+        ];
+
+        let gameId, playerNumber, myGrid, selectedShip, isHorizontal, remainingShips, gameRef;
+
+        function createEmptyGrid() {
+            return Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+        }
+
+        function createShipList() {
+            const ships = [];
+            SHIPS.forEach(ship => {
+                for (let i = 0; i < ship.count; i++) {
+                    ships.push({ name: ship.name, size: ship.size, id: ship.name + i });
+                }
+            });
+            return ships;
+        }
+
+        function generateGameId() {
+            return Math.random().toString(36).substring(2, 9).toUpperCase();
+        }
+
+        function createGame() {
+            gameId = generateGameId();
+            playerNumber = 1;
+            myGrid = createEmptyGrid();
+            
+            const newGame = {
+                player1: { ready: false, grid: null, shots: createEmptyGrid() },
+                player2: { ready: false, grid: null, shots: createEmptyGrid() },
+                currentTurn: 1,
+                winner: null,
+                status: 'waiting'
+            };
+            
+            db.ref('games/' + gameId).set(newGame).then(() => {
+                const gameLink = window.location.origin + window.location.pathname + '?game=' + gameId;
+                document.getElementById('gameLink').textContent = gameLink;
+                showScreen('waiting');
+                subscribeToGame();
+            });
+        }
+
+        function copyLink() {
+            const link = document.getElementById('gameLink').textContent;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Ссылка скопирована!');
+            });
+        }
+
+        function subscribeToGame() {
+            gameRef = db.ref('games/' + gameId);
+            gameRef.on('value', (snapshot) => {
+                const game = snapshot.val();
+                if (!game) return;
+                
+                if (game.status === 'waiting' && playerNumber === 1) {
+                    // Ждём
+                } else if (game.status === 'setup') {
+                    const myPlayer = 'player' + playerNumber;
+                    if (!game[myPlayer].ready) {
+                        showScreen('setup');
+                        remainingShips = createShipList();
+                        isHorizontal = true;
+                        renderSetup();
+                    } else {
+                        showScreen('waitingOpponent');
+                    }
+                } else if (game.status === 'playing') {
+                    showScreen('game');
+                    renderGame(game);
+                } else if (game.status === 'finished') {
+                    showScreen('gameover');
+                    if (game.winner === playerNumber) {
+                        document.getElementById('gameoverIcon').textContent = '🏆';
+                        document.getElementById('gameoverTitle').textContent = 'Победа!';
+                        document.getElementById('gameoverText').textContent = 'Вы выиграли!';
+                    } else {
+                        document.getElementById('gameoverIcon').textContent = '😔';
+                        document.getElementById('gameoverTitle').textContent = 'Поражение';
+                        document.getElementById('gameoverText').textContent = 'Противник победил';
+                    }
+                }
+            });
+        }
+
+        function joinGame(gId) {
+            gameId = gId;
+            playerNumber = 2;
+            myGrid = createEmptyGrid();
+            
+            db.ref('games/' + gameId).once('value').then((snapshot) => {
+                const game = snapshot.val();
+                if (!game) {
+                    alert('Игра не найдена');
+                    showScreen('menu');
+                    return;
+                }
+                db.ref('games/' + gameId).update({ status: 'setup' }).then(() => {
+                    subscribeToGame();
+                });
+            });
+        }
+
+        function showScreen(screen) {
+            ['menu', 'waiting', 'setup', 'waitingOpponent', 'game', 'gameover', 'loading'].forEach(s => {
+                document.getElementById(s).classList.add('hidden');
+            });
+            document.getElementById(screen).classList.remove('hidden');
+        }
+
+        function renderSetup() {
+            document.getElementById('setupPlayer').textContent = 'Вы: Игрок ' + playerNumber;
+            document.getElementById('shipsCount').textContent = remainingShips.length;
+            
+            const gridEl = document.getElementById('setupGrid');
+            gridEl.innerHTML = '';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (myGrid[i][j] === 1) cell.classList.add('ship');
+                    cell.onclick = function() { placeShipAt(i, j); };
+                    gridEl.appendChild(cell);
+                }
+            }
+            
+            const shipList = document.getElementById('shipList');
+            shipList.innerHTML = '';
+            remainingShips.forEach(ship => {
+                const btn = document.createElement('button');
+                btn.className = 'ship-btn';
+                if (selectedShip && selectedShip.id === ship.id) btn.classList.add('selected');
+                btn.textContent = ship.name + ' (' + ship.size + ' клетки)';
+                btn.onclick = function() { selectShip(ship); };
+                shipList.appendChild(btn);
+            });
+        }
+
+        function selectShip(ship) {
+            selectedShip = ship;
+            renderSetup();
+        }
+
+        function toggleRotation() {
+            isHorizontal = !isHorizontal;
+            document.getElementById('rotateBtn').textContent = '🔄 Повернуть (' + (isHorizontal ? 'горизонтально' : 'вертикально') + ')';
+        }
+
+        function canPlaceShip(grid, row, col, size, horizontal) {
+            if (horizontal) {
+                if (col + size > GRID_SIZE) return false;
+                for (let i = 0; i < size; i++) {
+                    if (grid[row][col + i] !== 0) return false;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = row + dr, nc = col + i + dc;
+                            if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
+                                if (grid[nr][nc] === 1) return false;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (row + size > GRID_SIZE) return false;
+                for (let i = 0; i < size; i++) {
+                    if (grid[row + i][col] !== 0) return false;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = row + i + dr, nc = col + dc;
+                            if (nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE) {
+                                if (grid[nr][nc] === 1) return false;
+                            }
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeShipAt(row, col) {
+            if (!selectedShip || !canPlaceShip(myGrid, row, col, selectedShip.size, isHorizontal)) return;
+            
+            if (isHorizontal) {
+                for (let i = 0; i < selectedShip.size; i++) myGrid[row][col + i] = 1;
+            } else {
+                for (let i = 0; i < selectedShip.size; i++) myGrid[row + i][col] = 1;
+            }
+            
+            remainingShips = remainingShips.filter(s => s.id !== selectedShip.id);
+            selectedShip = null;
+            
+            if (remainingShips.length === 0) {
+                finishSetup();
+            } else {
+                renderSetup();
+            }
+        }
+
+        function autoPlaceShips() {
+            myGrid = createEmptyGrid();
+            const shipsToPlace = createShipList();
+            
+            for (let ship of shipsToPlace) {
+                let placed = false, attempts = 0;
+                while (!placed && attempts < 100) {
+                    const horizontal = Math.random() < 0.5;
+                    const row = Math.floor(Math.random() * GRID_SIZE);
+                    const col = Math.floor(Math.random() * GRID_SIZE);
+                    
+                    if (canPlaceShip(myGrid, row, col, ship.size, horizontal)) {
+                        if (horizontal) {
+                            for (let i = 0; i < ship.size; i++) myGrid[row][col + i] = 1;
+                        } else {
+                            for (let i = 0; i < ship.size; i++) myGrid[row + i][col] = 1;
+                        }
+                        placed = true;
+                    }
+                    attempts++;
+                }
+            }
+            
+            remainingShips = [];
+            selectedShip = null;
+            finishSetup();
+        }
+
+        function finishSetup() {
+            const updates = {};
+            updates['player' + playerNumber + '/ready'] = true;
+            updates['player' + playerNumber + '/grid'] = myGrid;
+            
+            db.ref('games/' + gameId).once('value').then((snapshot) => {
+                const game = snapshot.val();
+                if (game.player1.ready && game.player2.ready) {
+                    updates['status'] = 'playing';
+                }
+                db.ref('games/' + gameId).update(updates);
+            });
+        }
+
+        function renderGame(game) {
+            const myPlayer = 'player' + playerNumber;
+            const oppPlayer = playerNumber === 1 ? 'player2' : 'player1';
+            const isMyTurn = game.currentTurn === playerNumber;
+            
+            const turnIndicator = document.getElementById('turnIndicator');
+            turnIndicator.textContent = isMyTurn ? '🎯 Ваш ход' : '⏳ Ход противника';
+            turnIndicator.className = isMyTurn ? 'status-badge' : 'status-badge waiting-badge';
+            
+            const myGridEl = document.getElementById('myGameGrid');
+            myGridEl.innerHTML = '';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (game[myPlayer].grid[i][j] === 1) cell.classList.add('ship');
+                    if (game[oppPlayer].shots[i][j] === 1) cell.classList.add('miss');
+                    if (game[oppPlayer].shots[i][j] === 2) cell.classList.add('hit');
+                    myGridEl.appendChild(cell);
+                }
+            }
+            
+            const oppGridEl = document.getElementById('opponentGrid');
+            oppGridEl.innerHTML = '';
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (game[myPlayer].shots[i][j] === 1) cell.classList.add('miss');
+                    if (game[myPlayer].shots[i][j] === 2) cell.classList.add('hit');
+                    if (isMyTurn) {
+                        const row = i, col = j;
+                        cell.onclick = function() { shoot(row, col, game); };
+                    }
+                    oppGridEl.appendChild(cell);
+                }
+            }
+            
+            let myHits = 0, oppHits = 0;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (game[oppPlayer].shots[i][j] === 2) myHits++;
+                    if (game[myPlayer].shots[i][j] === 2) oppHits++;
+                }
+            }
+            
+            document.getElementById('myHits').textContent = myHits;
+            document.getElementById('oppHits').textContent = oppHits;
+        }
+
+        function shoot(row, col, game) {
+            const myPlayer = 'player' + playerNumber;
+            const oppPlayer = playerNumber === 1 ? 'player2' : 'player1';
+            
+            if (game[myPlayer].shots[row][col] !== 0) return;
+            
+            const newShots = game[myPlayer].shots.map(r => r.slice());
+            newShots[row][col] = game[oppPlayer].grid[row][col] === 1 ? 2 : 1;
+            
+            let hits = 0;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    if (newShots[i][j] === 2) hits++;
+                }
+            }
+            
+            const updates = {};
+            updates[myPlayer + '/shots'] = newShots;
+            
+            if (hits === 20) {
+                updates['status'] = 'finished';
+                updates['winner'] = playerNumber;
+            } else {
+                updates['currentTurn'] = playerNumber === 1 ? 2 : 1;
+            }
+            
+            db.ref('games/' + gameId).update(updates);
+        }
+    </script>
+</body>
+</html>
