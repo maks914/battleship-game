@@ -30,12 +30,6 @@
             color: #1f2937;
             margin-bottom: 12px;
         }
-        h2 {
-            font-size: 32px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 16px;
-        }
         .subtitle {
             color: #6b7280;
             font-size: 18px;
@@ -61,22 +55,6 @@
         }
         .btn:hover {
             transform: scale(1.05);
-        }
-        .btn-secondary {
-            background: linear-gradient(to right, #10b981, #059669);
-        }
-        .input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 18px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-        .input:focus {
-            outline: none;
-            border-color: #2563eb;
         }
         .divider {
             margin-top: 32px;
@@ -230,6 +208,10 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
         .spinner {
             border: 4px solid #f3f4f6;
             border-top: 4px solid #2563eb;
@@ -243,111 +225,22 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-        .leaderboard-rank {
-            font-size: 24px;
-            font-weight: bold;
-            color: #6b7280;
-            width: 50px;
-        }
-        .leaderboard-name {
-            flex: 1;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-            text-align: left;
-        }
-        .leaderboard-stats {
-            font-size: 14px;
-            color: #6b7280;
-        }
-        .top-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); }
-        .top-2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); }
-        .top-3 { background: linear-gradient(135deg, #cd7f32, #e6a860); }
-        .user-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 24px 0;
-        }
-        .stat-box {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #2563eb;
-        }
-        .stat-label {
-            font-size: 14px;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-        .nav-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 <body>
-    <button class="nav-btn hidden" id="navBtn" onclick="toggleNav()">📊 Рейтинг</button>
-
     <div id="loading" class="container">
         <div class="spinner"></div>
         <p class="subtitle">Загрузка Firebase...</p>
     </div>
 
-    <div id="register" class="container hidden">
-        <div class="icon">👤</div>
-        <h1>Добро пожаловать!</h1>
-        <p class="subtitle">Введите ваш никнейм для игры</p>
-        <input type="text" id="nicknameInput" class="input" placeholder="Ваш никнейм" maxlength="20">
-        <button class="btn" onclick="registerUser()">✅ Продолжить</button>
-        <div class="divider">
-            <p class="small-text">Никнейм сохранится в браузере</p>
-        </div>
-    </div>
-
     <div id="menu" class="container hidden">
         <div class="icon">⚓</div>
         <h1>Морской бой</h1>
-        <p class="subtitle">Привет, <span id="userNickname"></span>!</p>
-        
-        <div class="user-stats">
-            <div class="stat-box">
-                <div class="stat-value" id="userWins">0</div>
-                <div class="stat-label">Побед</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="userLosses">0</div>
-                <div class="stat-label">Поражений</div>
-            </div>
-        </div>
-        
+        <p class="subtitle">Играйте онлайн с другом</p>
         <button class="btn" onclick="createGame()">🎮 Создать игру</button>
-        <button class="btn btn-secondary" onclick="showLeaderboard()">📊 Рейтинг игроков</button>
-        <button class="btn" style="background: linear-gradient(to right, #ef4444, #dc2626);" onclick="logoutUser()">🚪 Сменить никнейм</button>
-    </div>
-
-    <div id="leaderboard" class="container hidden" style="max-width: 600px;">
-        <h2>🏆 Рейтинг игроков</h2>
-        <p class="subtitle">Топ-20 лучших игроков</p>
-        <div id="leaderboardList"></div>
-        <button class="btn" onclick="showMenu()" style="margin-top: 24px;">⬅️ Назад</button>
+        <div class="divider">
+            <p class="small-text">✅ Игра через интернет на разных устройствах</p>
+        </div>
     </div>
 
     <div id="waiting" class="container hidden">
@@ -392,9 +285,6 @@
     <div id="game" class="container game-container hidden">
         <h1 style="margin-bottom: 16px;">Морской бой</h1>
         <div class="status-badge" id="turnIndicator">🎯 Ваш ход</div>
-        <p class="subtitle" style="margin-top: 12px;">
-            <span id="player1Name">Игрок 1</span> vs <span id="player2Name">Игрок 2</span>
-        </p>
         <div class="game-grid-wrapper" style="margin-top: 32px;">
             <div class="grid-section">
                 <h3>Ваше поле 🛡️</h3>
@@ -417,7 +307,7 @@
         <div style="font-size: 128px; margin-bottom: 24px;" id="gameoverIcon">🏆</div>
         <h1 style="margin-bottom: 16px;" id="gameoverTitle">Победа!</h1>
         <p class="subtitle" style="margin-bottom: 32px;" id="gameoverText">Вы выиграли!</p>
-        <button class="btn" onclick="backToMenu()">🏠 В меню</button>
+        <button class="btn" onclick="location.href = location.origin + location.pathname">🎮 Новая игра</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -426,9 +316,6 @@
         window.addEventListener('load', function() {
             setTimeout(initApp, 100);
         });
-
-        let currentUserId = null;
-        let currentUserNickname = null;
 
         function initApp() {
             try {
@@ -447,151 +334,17 @@
                 
                 document.getElementById('loading').classList.add('hidden');
                 
-                // Проверяем сохраненного пользователя
-                const savedUserId = localStorage.getItem('battleship_user_id');
-                if (savedUserId) {
-                    loadUser(savedUserId);
-                } else {
-                    showScreen('register');
-                }
-            } catch (error) {
-                console.error('Firebase init error:', error);
-                document.getElementById('loading').innerHTML = '<div class="icon">❌</div><h1>Ошибка загрузки</h1><p class="subtitle">Не удалось подключиться к Firebase.</p>';
-            }
-        }
-
-        function registerUser() {
-            const nickname = document.getElementById('nicknameInput').value.trim();
-            if (!nickname) {
-                alert('Введите никнейм!');
-                return;
-            }
-            
-            const userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            const userData = {
-                nickname: nickname,
-                wins: 0,
-                losses: 0,
-                createdAt: Date.now()
-            };
-            
-            db.ref('users/' + userId).set(userData).then(() => {
-                localStorage.setItem('battleship_user_id', userId);
-                currentUserId = userId;
-                currentUserNickname = nickname;
-                loadUserStats();
-                
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlGameId = urlParams.get('game');
                 
                 if (urlGameId) {
                     joinGame(urlGameId);
                 } else {
-                    showMenu();
+                    showScreen('menu');
                 }
-            });
-        }
-
-        function loadUser(userId) {
-            db.ref('users/' + userId).once('value').then((snapshot) => {
-                const userData = snapshot.val();
-                if (userData) {
-                    currentUserId = userId;
-                    currentUserNickname = userData.nickname;
-                    loadUserStats();
-                    
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const urlGameId = urlParams.get('game');
-                    
-                    if (urlGameId) {
-                        joinGame(urlGameId);
-                    } else {
-                        showMenu();
-                    }
-                } else {
-                    localStorage.removeItem('battleship_user_id');
-                    showScreen('register');
-                }
-            });
-        }
-
-        function loadUserStats() {
-            db.ref('users/' + currentUserId).once('value').then((snapshot) => {
-                const userData = snapshot.val();
-                document.getElementById('userNickname').textContent = userData.nickname;
-                document.getElementById('userWins').textContent = userData.wins || 0;
-                document.getElementById('userLosses').textContent = userData.losses || 0;
-            });
-        }
-
-        function showMenu() {
-            loadUserStats();
-            showScreen('menu');
-            document.getElementById('navBtn').classList.remove('hidden');
-        }
-
-        function logoutUser() {
-            if (confirm('Вы уверены? Статистика сохранится, но вы сможете войти под другим ником.')) {
-                localStorage.removeItem('battleship_user_id');
-                currentUserId = null;
-                currentUserNickname = null;
-                document.getElementById('navBtn').classList.add('hidden');
-                showScreen('register');
-            }
-        }
-
-        function showLeaderboard() {
-            showScreen('leaderboard');
-            document.getElementById('leaderboardList').innerHTML = '<div class="spinner"></div>';
-            
-            db.ref('users').orderByChild('wins').limitToLast(20).once('value').then((snapshot) => {
-                const users = [];
-                snapshot.forEach((childSnapshot) => {
-                    const userData = childSnapshot.val();
-                    users.push({
-                        id: childSnapshot.key,
-                        nickname: userData.nickname,
-                        wins: userData.wins || 0,
-                        losses: userData.losses || 0
-                    });
-                });
-                
-                users.sort((a, b) => b.wins - a.wins);
-                
-                let html = '';
-                users.forEach((user, index) => {
-                    const rank = index + 1;
-                    const classNames = ['leaderboard-item'];
-                    if (rank === 1) classNames.push('top-1');
-                    else if (rank === 2) classNames.push('top-2');
-                    else if (rank === 3) classNames.push('top-3');
-                    
-                    const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-                    
-                    html += `
-                        <div class="${classNames.join(' ')}">
-                            <div class="leaderboard-rank">${medal || rank}</div>
-                            <div class="leaderboard-name">${user.nickname}${user.id === currentUserId ? ' (вы)' : ''}</div>
-                            <div class="leaderboard-stats">
-                                <div>Побед: ${user.wins}</div>
-                                <div>Поражений: ${user.losses}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                document.getElementById('leaderboardList').innerHTML = html || '<p class="subtitle">Пока нет игроков в рейтинге</p>';
-            });
-        }
-
-        function toggleNav() {
-            const btn = document.getElementById('navBtn');
-            if (btn.textContent.includes('Рейтинг')) {
-                showLeaderboard();
-                btn.textContent = '🏠 Меню';
-            } else {
-                showMenu();
-                btn.textContent = '📊 Рейтинг';
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                document.getElementById('loading').innerHTML = '<div class="icon">❌</div><h1>Ошибка загрузки</h1><p class="subtitle">Не удалось подключиться к Firebase.</p>';
             }
         }
 
@@ -629,20 +382,8 @@
             myGrid = createEmptyGrid();
             
             const newGame = {
-                player1: { 
-                    ready: false, 
-                    grid: null, 
-                    shots: createEmptyGrid(),
-                    userId: currentUserId,
-                    nickname: currentUserNickname
-                },
-                player2: { 
-                    ready: false, 
-                    grid: null, 
-                    shots: createEmptyGrid(),
-                    userId: null,
-                    nickname: null
-                },
+                player1: { ready: false, grid: null, shots: createEmptyGrid() },
+                player2: { ready: false, grid: null, shots: createEmptyGrid() },
                 currentTurn: 1,
                 winner: null,
                 status: 'waiting'
@@ -669,6 +410,8 @@
                 const game = snapshot.val();
                 if (!game) return;
                 
+                console.log('Game status:', game.status, 'Player:', playerNumber);
+                
                 if (game.status === 'waiting' && playerNumber === 1) {
                     // Ждём
                 } else if (game.status === 'setup') {
@@ -683,8 +426,6 @@
                     }
                 } else if (game.status === 'playing') {
                     showScreen('game');
-                    document.getElementById('player1Name').textContent = game.player1.nickname || 'Игрок 1';
-                    document.getElementById('player2Name').textContent = game.player2.nickname || 'Игрок 2';
                     renderGame(game);
                 } else if (game.status === 'finished') {
                     showScreen('gameover');
@@ -713,28 +454,21 @@
                     showScreen('menu');
                     return;
                 }
-                
-                const updates = {
-                    status: 'setup',
-                    'player2/userId': currentUserId,
-                    'player2/nickname': currentUserNickname
-                };
-                
-                db.ref('games/' + gameId).update(updates).then(() => {
+                db.ref('games/' + gameId).update({ status: 'setup' }).then(() => {
                     subscribeToGame();
                 });
             });
         }
 
         function showScreen(screen) {
-            ['menu', 'waiting', 'setup', 'waitingOpponent', 'game', 'gameover', 'loading', 'register', 'leaderboard'].forEach(s => {
+            ['menu', 'waiting', 'setup', 'waitingOpponent', 'game', 'gameover', 'loading'].forEach(s => {
                 document.getElementById(s).classList.add('hidden');
             });
             document.getElementById(screen).classList.remove('hidden');
         }
 
         function renderSetup() {
-            document.getElementById('setupPlayer').textContent = 'Вы: ' + currentUserNickname;
+            document.getElementById('setupPlayer').textContent = 'Вы: Игрок ' + playerNumber;
             document.getElementById('shipsCount').textContent = remainingShips.length;
             
             const gridEl = document.getElementById('setupGrid');
@@ -850,6 +584,8 @@
         }
 
         function finishSetup() {
+            console.log('Finishing setup for player', playerNumber);
+            
             db.ref('games/' + gameId).once('value').then((snapshot) => {
                 const game = snapshot.val();
                 
@@ -860,11 +596,17 @@
                 const otherPlayerNum = playerNumber === 1 ? 2 : 1;
                 const otherPlayer = 'player' + otherPlayerNum;
                 
+                console.log('My ready: true, Other player ready:', game[otherPlayer].ready);
+                
+                // Проверяем оба условия: и свою готовность (после update), и готовность противника
                 if (game[otherPlayer].ready && game[otherPlayer].grid) {
                     updates['status'] = 'playing';
+                    console.log('Both players ready! Starting game...');
                 }
                 
-                db.ref('games/' + gameId).update(updates);
+                db.ref('games/' + gameId).update(updates).then(() => {
+                    console.log('Updates saved successfully');
+                });
             });
         }
 
@@ -940,41 +682,11 @@
             if (hits === 20) {
                 updates['status'] = 'finished';
                 updates['winner'] = playerNumber;
-                
-                // Обновляем статистику
-                const winnerId = game[myPlayer].userId;
-                const loserId = game[oppPlayer].userId;
-                
-                if (winnerId) {
-                    db.ref('users/' + winnerId).once('value').then((snapshot) => {
-                        const userData = snapshot.val();
-                        db.ref('users/' + winnerId).update({
-                            wins: (userData.wins || 0) + 1
-                        });
-                    });
-                }
-                
-                if (loserId) {
-                    db.ref('users/' + loserId).once('value').then((snapshot) => {
-                        const userData = snapshot.val();
-                        db.ref('users/' + loserId).update({
-                            losses: (userData.losses || 0) + 1
-                        });
-                    });
-                }
             } else {
                 updates['currentTurn'] = playerNumber === 1 ? 2 : 1;
             }
             
             db.ref('games/' + gameId).update(updates);
-        }
-
-        function backToMenu() {
-            if (gameRef) {
-                gameRef.off();
-            }
-            window.history.pushState({}, '', window.location.pathname);
-            showMenu();
         }
     </script>
 </body>
